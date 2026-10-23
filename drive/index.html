@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>qDrive</title>
+    <meta name="description" content="Your files on your own devices, moved directly between them. No cloud." />
+    <link rel="stylesheet" href="../qsuite.css" />
+    <style>
+      .qd-page {
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: var(--space-5) var(--space-4) var(--space-6);
+        width: 100%;
+      }
+
+      .qd-gate {
+        max-width: 30rem;
+        margin: var(--space-6) auto;
+        text-align: center;
+      }
+
+      .qd-gate h2 { color: var(--accent); margin-bottom: var(--space-3); }
+      .qd-gate p { color: var(--text-muted); margin-bottom: var(--space-4); }
+      .qd-gate form { text-align: left; }
+
+      .qd-err {
+        color: var(--danger);
+        font-size: 0.9rem;
+        min-height: 1.2em;
+        margin-top: var(--space-2);
+      }
+
+      .qd-section { margin-bottom: var(--space-5); }
+
+      .qd-section-head {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        margin-bottom: var(--space-2);
+      }
+
+      .qd-section-head h2 { font-size: 1.1rem; }
+
+      .qd-conn {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        padding: 2px var(--space-2);
+        border-radius: 999px;
+        border: 1px solid var(--border);
+      }
+
+      .qd-conn.qd-ok { color: var(--success); border-color: var(--success); }
+      .qd-conn.qd-wait { color: var(--accent); border-color: var(--accent); }
+
+      .qd-drop {
+        border: 2px dashed var(--border-strong);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        text-align: center;
+        color: var(--text-faint);
+        margin-bottom: var(--space-3);
+        transition: border-color 0.15s, background-color 0.15s;
+      }
+
+      .qd-drop.qd-drag {
+        border-color: var(--accent);
+        background-color: var(--bg-sunken);
+        color: var(--text);
+      }
+
+      ul.qd-files { list-style: none; }
+
+      .qd-file {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: var(--space-2);
+        background-color: var(--bg-raised);
+      }
+
+      .qd-file-main { flex: 1 1 auto; min-width: 0; }
+
+      .qd-file-name {
+        display: block;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .qd-file-meta {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-faint);
+      }
+
+      /* A hidden file is dimmed but still fully usable locally -- hiding only
+         controls what your other devices are offered, it is not an archive. */
+      .qd-file-hidden .qd-file-name { opacity: 0.55; }
+
+      .qd-tag {
+        display: inline-block;
+        padding: 0 6px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        border: 1px solid currentColor;
+      }
+
+      .qd-tag-live { color: var(--success); }
+      .qd-tag-hidden { color: var(--text-faint); }
+
+      .qd-file-actions {
+        display: flex;
+        gap: var(--space-1);
+        flex: 0 0 auto;
+      }
+
+      .qd-file-actions .qs-btn { padding: var(--space-1) var(--space-2); font-size: 0.85rem; }
+
+      ul.qd-xfers { list-style: none; }
+
+      .qd-xfer {
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: var(--space-2);
+        background-color: var(--bg-raised);
+      }
+
+      .qd-xfer-failed { border-color: var(--danger); }
+
+      .qd-xfer-head {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-3);
+        font-size: 0.9rem;
+        margin-bottom: var(--space-1);
+      }
+
+      .qd-bar {
+        height: 5px;
+        background-color: var(--bg-sunken);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .qd-bar-fill {
+        height: 100%;
+        background-color: var(--accent);
+        transition: width 0.15s linear;
+      }
+
+      .qd-note {
+        padding: var(--space-3) var(--space-4);
+        border-left: 3px solid var(--accent);
+        background-color: var(--bg-sunken);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: var(--space-5);
+      }
+
+      #logBox {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        background-color: var(--bg-sunken);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: var(--space-2);
+        max-height: 180px;
+        overflow-y: auto;
+        margin-top: var(--space-2);
+      }
+
+      .qd-code-row { margin-bottom: var(--space-3); }
+      .qd-code-row label { display: block; font-size: 0.85rem; margin-bottom: var(--space-1); }
+      .qd-code-row textarea { font-family: var(--font-mono); font-size: 0.72rem; }
+
+      .qd-linkish {
+        background: none;
+        border: none;
+        color: var(--accent);
+        cursor: pointer;
+        font-size: 0.85rem;
+        padding: 0;
+        text-decoration: underline;
+      }
+
+      .qs-visually-hidden {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="qs-app">
+      <header class="qs-topbar">
+        <h1>qDrive</h1>
+        <span class="qs-faint" id="whoami"></span>
+        <span class="qs-spacer"></span>
+        <a class="qs-btn" href="../">qSuite</a>
+      </header>
+
+      <div class="qs-scroll" style="flex:1 1 auto">
+        <div class="qd-page">
+          <!-- 1. no secure context -->
+          <section class="qd-gate qs-card" id="gateInsecure" hidden>
+            <h2>This page can't use qDrive</h2>
+            <p id="insecureMessage"></p>
+          </section>
+
+          <!-- 2. no account on this device -->
+          <section class="qd-gate qs-card" id="gateNoAccount" hidden>
+            <h2>Sign in first</h2>
+            <p>
+              qDrive moves files between <em>your</em> devices, so it needs to know which
+              account this device belongs to. Sign in with Qwertious Accounts, then come back.
+            </p>
+            <a class="qs-btn qs-btn-primary" href="/accounts/">Go to Qwertious Accounts</a>
+          </section>
+
+          <!-- 3. account present, key locked -->
+          <section class="qd-gate qs-card" id="gateUnlock" hidden>
+            <h2>Unlock <span id="accountName"></span></h2>
+            <p>
+              Your password unlocks this device's key so it can prove to your other devices
+              that it's really yours. It isn't sent anywhere and isn't stored.
+            </p>
+            <form id="unlockForm">
+              <label class="qs-visually-hidden" for="unlockPassword">Account password</label>
+              <input
+                id="unlockPassword"
+                class="qs-input"
+                type="password"
+                placeholder="Account password"
+                autocomplete="current-password"
+                required
+              />
+              <div class="qd-err" id="unlockError"></div>
+              <button type="submit" class="qs-btn qs-btn-primary" style="width:100%">Unlock</button>
+            </form>
+          </section>
+
+          <!-- 4. the drive -->
+          <main id="driveMain" hidden>
+            <div class="qd-note">
+              Anything you add here is immediately available to your <em>own</em> other devices
+              &mdash; no separate sharing step. Use <strong>Hide</strong> on a file to keep it
+              off that list. Nothing is uploaded anywhere, and only a device signed into this
+              account can ask for your files. To actually move one across, both devices need
+              qDrive open at the same time &mdash; there's no server holding a copy in between.
+            </div>
+
+            <section class="qd-section">
+              <div class="qd-section-head">
+                <h2>Your devices</h2>
+                <span class="qd-conn" id="connState">Not connected</span>
+              </div>
+              <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+                <button class="qs-btn" id="shareBtn">Share this device</button>
+                <button class="qs-btn qs-btn-primary" id="connectBtn">Connect to my other device</button>
+                <span class="qs-spacer"></span>
+                <button class="qd-linkish" id="codeToggle">No connection? Use a code</button>
+              </div>
+
+              <div class="qs-card" id="codePanel" hidden style="margin-top:var(--space-3)">
+                <p class="qs-faint" style="margin-bottom:var(--space-3)">
+                  If neither device can reach a qSuite node, you can pair them by hand. Do this
+                  on one device, then paste the code into the other.
+                </p>
+                <div class="qd-code-row">
+                  <button class="qs-btn" id="makeCodeBtn">1. Create a connection code</button>
+                  <textarea id="codeOut" class="qs-textarea" rows="3" readonly
+                    placeholder="the code will appear here"></textarea>
+                </div>
+                <div class="qd-code-row">
+                  <label for="codeIn">2. On the other device, paste it here</label>
+                  <textarea id="codeIn" class="qs-textarea" rows="3"
+                    placeholder="paste the connection code"></textarea>
+                  <button class="qs-btn" id="useCodeBtn">Use this code</button>
+                </div>
+                <div class="qd-code-row" id="replyRow" hidden>
+                  <label for="replyIn">3. Back on the first device, paste the reply</label>
+                  <textarea id="replyIn" class="qs-textarea" rows="3"
+                    placeholder="paste the reply code"></textarea>
+                  <button class="qs-btn" id="useReplyBtn">Finish connecting</button>
+                </div>
+              </div>
+
+              <button class="qd-linkish" id="logToggle" style="margin-top:var(--space-2)">
+                Show connection log
+              </button>
+              <div id="logBox" hidden></div>
+            </section>
+
+            <section class="qd-section" id="transferPanel" hidden>
+              <div class="qd-section-head"><h2>Transfers</h2></div>
+              <ul class="qd-xfers" id="transferList"></ul>
+            </section>
+
+            <section class="qd-section" id="remotePanel" hidden>
+              <div class="qd-section-head">
+                <h2>On your other device</h2>
+                <span class="qs-faint" id="remoteCount"></span>
+              </div>
+              <ul class="qd-files" id="remoteList"></ul>
+            </section>
+
+            <section class="qd-section">
+              <div class="qd-section-head">
+                <h2>On this device</h2>
+                <span class="qs-faint" id="fileCount"></span>
+                <span class="qs-spacer"></span>
+                <button class="qs-btn qs-btn-primary" id="addBtn">Add files</button>
+                <input type="file" id="fileInput" multiple hidden />
+              </div>
+              <div class="qd-drop" id="dropZone">Drop files here to add them</div>
+              <ul class="qd-files" id="fileList"></ul>
+              <p class="qs-faint" id="storageLine"></p>
+            </section>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <div class="qs-toast" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Order matters: qip.js provides the crypto everything else builds on;
+         qsuite-config.js must come after transport-webrtc.js because it calls
+         configureTurnServers() on it. -->
+    <script src="/accounts/qip.js"></script>
+    <script src="../lib/qrp-web.js"></script>
+    <script src="../lib/transport-webrtc.js"></script>
+    <script src="../lib/qsuite-config.js"></script>
+    <script src="../lib/qnp-client.js"></script>
+    <script src="../lib/qnp-lobby.js"></script>
+    <script src="../lib/qsuite-p2p.js"></script>
+    <script src="store.js"></script>
+    <script src="transfer.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

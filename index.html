@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>qSuite</title>
+    <meta name="description" content="qDocs, qDrive and QMS - documents, files and messaging with no cloud in the middle." />
+    <link rel="stylesheet" href="qsuite.css" />
+    <style>
+      .ql-page {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: var(--space-6) var(--space-4);
+      }
+
+      .ql-hero {
+        text-align: center;
+        margin-bottom: var(--space-6);
+      }
+
+      .ql-hero h1 {
+        font-size: 2.6rem;
+        color: var(--accent);
+        letter-spacing: -0.02em;
+      }
+
+      .ql-hero p {
+        color: var(--text-muted);
+        margin-top: var(--space-2);
+        font-size: 1.05rem;
+      }
+
+      .ql-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: var(--space-4);
+      }
+
+      /* Whole card is the link, so the target is large and there is exactly
+         one tab stop per app rather than a nested link inside a clickable div. */
+      .ql-card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        padding: var(--space-5);
+        background-color: var(--bg-raised);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        text-decoration: none;
+        color: inherit;
+        transition: border-color 0.15s, transform 0.1s;
+      }
+
+      .ql-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .ql-card h2 {
+        font-size: 1.25rem;
+        color: var(--accent);
+      }
+
+      .ql-card p {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        flex: 1 1 auto;
+      }
+
+      .ql-icon {
+        font-size: 1.9rem;
+        line-height: 1;
+      }
+
+      .ql-note {
+        margin-top: var(--space-6);
+        padding: var(--space-4);
+        border-left: 3px solid var(--accent);
+        background-color: var(--bg-sunken);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      .ql-note strong { color: var(--text); }
+
+      .ql-soon {
+        opacity: 0.55;
+        pointer-events: none;
+      }
+
+      .ql-foot {
+        margin-top: var(--space-6);
+        text-align: center;
+        color: var(--text-faint);
+        font-size: 0.85rem;
+      }
+
+      .ql-foot a { color: var(--accent); }
+    </style>
+  </head>
+
+  <body>
+    <div class="ql-page">
+      <header class="ql-hero">
+        <h1>qSuite</h1>
+        <p>Documents, files and messaging &mdash; with no cloud in the middle.</p>
+      </header>
+
+      <main class="ql-grid">
+        <a class="ql-card" href="docs/">
+          <span class="ql-icon" aria-hidden="true">&#128209;</span>
+          <h2>qDocs</h2>
+          <p>
+            Write documents that never leave this device. Search across everything you've
+            written, and export to text, Markdown, a self-contained web page, Word or PDF.
+          </p>
+          <span class="qs-badge">Ready</span>
+        </a>
+
+        <a class="ql-card" href="drive/">
+          <span class="ql-icon" aria-hidden="true">&#128190;</span>
+          <h2>qDrive</h2>
+          <p>
+            Your files, stored on your own devices. Sign in on two machines and move files
+            straight between them &mdash; there is no server holding a copy.
+          </p>
+          <span class="qs-badge">Ready</span>
+        </a>
+
+        <a class="ql-card" href="/qMS/">
+          <span class="ql-icon" aria-hidden="true">&#128172;</span>
+          <h2>QMS</h2>
+          <p>
+            Channels and direct messages, signed in with your Qwertious account rather than
+            yet another username and password.
+          </p>
+          <span class="qs-badge">Live</span>
+        </a>
+
+        <a class="ql-card" href="/qwOS/">
+          <span class="ql-icon" aria-hidden="true">&#128421;</span>
+          <h2>qwOS</h2>
+          <p>
+            A desktop in the browser, with its own filesystem and sandboxed apps. Everything
+            it runs on is a file you can open and edit &mdash; including the kernel.
+          </p>
+          <span class="qs-badge">Ready</span>
+        </a>
+      </main>
+
+      <aside class="ql-note">
+        <strong>Why "no cloud"?</strong> qDocs keeps everything in this browser's own
+        storage. qDrive moves files directly between your devices over an encrypted
+        connection, so nothing is parked on someone else's disk. The trade-off is honest:
+        both of your devices have to be switched on at the same time for a transfer,
+        because there is no server in the middle holding it for later.
+      </aside>
+
+      <p class="ql-foot">
+        Part of <a href="/">Qwertious</a> &middot;
+        <a href="/accounts/">Qwertious Accounts</a>
+      </p>
+    </div>
+  </body>
+</html>
